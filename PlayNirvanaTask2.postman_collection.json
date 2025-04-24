@@ -1,0 +1,941 @@
+{
+	"info": {
+		"_postman_id": "6301e437-e1b3-4777-a00f-2c23c36811c4",
+		"name": "PlayNirvanaTask2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37328598"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "PositivePath",
+					"item": [
+						{
+							"name": "Register",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"_ = require('lodash')\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains a registration token of valid type\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.include.keys('registrationToken')\r",
+											"    pm.expect(jsonData.registrationToken).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);\r",
+											"\r",
+											"    const registrationReqBody = JSON.parse(pm.variables.get('reqBody'))\r",
+											"    const reqgistrationDetails = _.pick(registrationReqBody, ['username', 'password', 'deviceId', 'clientId', 'documentNumber', 'emailAddress'])\r",
+											"    pm.collectionVariables.set('registeredAccount', reqgistrationDetails)\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code !== 200) {\r",
+											"    let currentCounter = pm.collectionVariables.get('registrationFailCounter') ?? 10\r",
+											"    if (currentCounter-- > 0) pm.execution.setNextRequest(request.name)\r",
+											"    pm.collectionVariables.set('registrationFailCounter', currentCounter)\r",
+											"    console.error('registration failed, repeating', currentCounter)\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "NegativePath",
+					"item": [
+						{
+							"name": "Register -  password too short",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"reqBody.password = '123'\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register -  password too long",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"reqBody.password = '1233333333333333333333333333333333333333333333333'\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register - not unique username",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"reqBody.username = registeredAccount.username\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register - not unique email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"reqBody.emailAddress = registeredAccount.emailAddress\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register - not unique document number",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"reqBody.documentNumber = registeredAccount.documentNumber\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register - invalid email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const reqBody = generateRandomRegistrationReqBody()\r",
+											"reqBody.emailAddress = 'test@test'\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/registration/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"registration",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"_ = require('lodash')\r",
+							"\r",
+							"const randomWord = () => pm.variables.replaceIn(\"{{$randomWord}}\")\r",
+							"\r",
+							"generateRandomRegistrationReqBody = () => {\r",
+							"    const userName = `${randomWord()}${_.random(100000,999999)}`\r",
+							"\r",
+							"    const reqBody = {\r",
+							"        \"clientId\": pm.variables.replaceIn(\"{{$randomUUID}}\"),\r",
+							"        \"deviceId\": pm.variables.replaceIn(\"{{$randomUUID}}\"),\r",
+							"        \"documentNumber\": `${_.random(100000, 99999999)}`,\r",
+							"        \"emailAddress\": `${userName}@${randomWord()}.com`,\r",
+							"        \"firstName\": randomWord(),\r",
+							"        \"genderType\": _.sample([0,1]),\r",
+							"        \"lastName\": randomWord(),\r",
+							"        \"password\": `${pm.variables.replaceIn(\"{{$randomPassword}}\")}${_.random(0,1000)}`,\r",
+							"        \"username\": userName,\r",
+							"        \"acceptBonusParticipation\": true,\r",
+							"        \"acceptParticipationInActionsBonusesPrizeGames\": true,\r",
+							"        \"acceptPromoNotifications\": true,\r",
+							"        \"acceptTermsAndConditions\": true,\r",
+							"        \"address\": \"Some street 123\",\r",
+							"        \"bankAccountNumber\": null,\r",
+							"        \"city\": \"Andrijevica\",\r",
+							"        \"clientType\": \"WebConsumer\",\r",
+							"        \"countryNumericCode\": 499,\r",
+							"        \"dateOfBirth\": \"1800-02-23\",\r",
+							"        \"phoneNumber\": \"382123456723\",\r",
+							"        \"skipTaxNumberCheck\": true,\r",
+							"        \"taxNumber\": null,\r",
+							"        \"zipCode\": \"843\"\r",
+							"    }\r",
+							"\r",
+							"    return reqBody\r",
+							"\r",
+							"}\r",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "PositivePath",
+					"item": [
+						{
+							"name": "GET verificationToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains a verification token of valid type and timeoutInterval\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.include.keys('verificationToken')\r",
+											"    pm.expect(jsonData.verificationToken).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);\r",
+											"\r",
+											"    pm.expect(jsonData).to.include.keys('timeoutIntervalMilliseconds')\r",
+											"    pm.expect(jsonData.timeoutIntervalMilliseconds).to.be.eq(120000)\r",
+											"\r",
+											"    pm.collectionVariables.set('verificationToken', jsonData.verificationToken)\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"\r",
+											"const reqBody = {\r",
+											"\t\"actionType\": \"login\",\r",
+											"\t\"deviceId\": registeredAccount.deviceId,\r",
+											"\t\"verificationType\": \"Password\",\r",
+											"\t\"verificationValue\": registeredAccount.username\r",
+											"}\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/Mfa/VerificationRequest",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"Mfa",
+										"VerificationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"const verificationToken = pm.collectionVariables.get('verificationToken')\r",
+											"\r",
+											"\r",
+											"const reqBody = {\r",
+											"\t\"clientId\": registeredAccount.clientId,\r",
+											"\t\"clientType\": \"WebConsumer\",\r",
+											"\t\"deviceId\": registeredAccount.deviceId,\r",
+											"\t\"verificationToken\": verificationToken,\r",
+											"\t\"verificationValue\": registeredAccount.password\r",
+											"}\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response confirms account is verified\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.include.keys('isVerified')\r",
+											"    pm.expect(jsonData.isVerified).to.be.true\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/Mfa/VerificationConfirm",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"Mfa",
+										"VerificationConfirm"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "NegativePath",
+					"item": [
+						{
+							"name": "GET verificationToken with invalid username",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"\r",
+											"const reqBody = {\r",
+											"\t\"actionType\": \"login\",\r",
+											"\t\"deviceId\": registeredAccount.deviceId,\r",
+											"\t\"verificationType\": \"Password\",\r",
+											"\t\"verificationValue\": `${_.random(100000000,9999999999)}`\r",
+											"}\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/Mfa/VerificationRequest",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"Mfa",
+										"VerificationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Incorrect password login",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"const verificationToken = pm.collectionVariables.get('verificationToken')\r",
+											"\r",
+											"\r",
+											"const reqBody = {\r",
+											"\t\"clientId\": registeredAccount.clientId,\r",
+											"\t\"clientType\": \"WebConsumer\",\r",
+											"\t\"deviceId\": registeredAccount.deviceId,\r",
+											"\t\"verificationToken\": verificationToken,\r",
+											"\t\"verificationValue\": `${registeredAccount.password} 123`\r",
+											"}\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/Mfa/VerificationConfirm",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"Mfa",
+										"VerificationConfirm"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Missing password login",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const registeredAccount = pm.collectionVariables.get('registeredAccount')\r",
+											"const verificationToken = pm.collectionVariables.get('verificationToken')\r",
+											"\r",
+											"\r",
+											"const reqBody = {\r",
+											"\t\"clientId\": registeredAccount.clientId,\r",
+											"\t\"clientType\": \"WebConsumer\",\r",
+											"\t\"deviceId\": registeredAccount.deviceId,\r",
+											"\t\"verificationToken\": verificationToken,\r",
+											"}\r",
+											"\r",
+											"pm.variables.set('reqBody', JSON.stringify(reqBody, null, 4))"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{{reqBody}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/public/Mfa/VerificationConfirm",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"public",
+										"Mfa",
+										"VerificationConfirm"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{cloudflareToken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "t",
+				"type": "string"
+			},
+			{
+				"key": "in",
+				"value": "query",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "https://playerapi.stage-xtreme.com",
+			"type": "string"
+		},
+		{
+			"key": "cloudflareToken",
+			"value": "679a5ac9-d5da-4c9e-9dd2-dcf2eb07cdbc",
+			"type": "string"
+		},
+		{
+			"key": "registrationFailCounter",
+			"value": ""
+		},
+		{
+			"key": "registeredAccount",
+			"value": ""
+		},
+		{
+			"key": "verificationToken",
+			"value": ""
+		}
+	]
+}

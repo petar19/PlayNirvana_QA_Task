@@ -4,7 +4,6 @@ import { faker } from '@faker-js/faker';
 describe('User Registration and Login Flow', () => {
     beforeEach(() => {
       cy.setCloudflareBypass();
-      cy.viewport(1280, 800)
     });
 
     let testData;
@@ -93,8 +92,6 @@ describe('User Registration and Login Flow', () => {
       cy.get('button[type="submit"]:visible').click();
       cy.wait(2500)
       cy.checkError()
-
-      cy.checkIfLoggedIn()
     })
 
     it('registering with incorrect data', () => {

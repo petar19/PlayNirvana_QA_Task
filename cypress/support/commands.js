@@ -1,7 +1,4 @@
-const { faker } = require('@faker-js/faker');
-
 const authToken = Cypress.env('authToken');
-console.error('auth token', authToken)
 
 Cypress.Commands.add('setCloudflareBypass', () => {
     cy.setCookie('CF_Authorization', authToken, {
@@ -12,13 +9,9 @@ Cypress.Commands.add('setCloudflareBypass', () => {
 });
 
 Cypress.Commands.add('fillInputField', (field, value) => {
-    const text = cy.wrap(value)
-    text.then((generatedText) => {
-        const el = typeof field === 'string' ? cy.get(field) : field;
-        el.clear().type(generatedText);
-    })
+    const el = typeof field === 'string' ? cy.get(field) : field;
+    el.clear().type(value);
 });
-
 
 Cypress.Commands.add('checkNoError', () => {
     cy.get('.invalid-feedback').should('not.exist')
@@ -39,27 +32,11 @@ Cypress.Commands.add('dropdownSelect', (field, indexOverride = null, fillValue =
         });
 });
 
-
-Cypress.Commands.add('checkIfLoggedIn', () => {
-    cy.get('.user-controls').should('be.visible');
-    cy.get('.user-controls').click()
-    cy.wait(1000)
-
-    cy.get('@valid_username').then((username) => {
-    cy.get('.username')
-        .invoke('text')
-        .then((text) => {
-        cy.wrap(text.trim()).should('equal', username);
-        });
-    });
-});
-
 Cypress.Commands.add('testInputField', (field, correctValue, options = {}) => {
     options = {
         incorrectValue: null,
         skipErrorCheck: false,
         fieldName: '',
-        xpath: false,
         maxRetries: 5,
         ...options
     }
@@ -89,8 +66,7 @@ Cypress.Commands.add('testInputField', (field, correctValue, options = {}) => {
                   } else {
                     throw new Error('Failed to input a valid value after multiple attempts');
                   }
-                } else {
-                    console.error('saving variable', value, `valid_${options.fieldName}`)
+                } else if (options.fieldName && options.fieldName !== '') {
                     cy.wrap(value).as(`valid_${options.fieldName}`);
                 }
             });
@@ -100,4 +76,16 @@ Cypress.Commands.add('testInputField', (field, correctValue, options = {}) => {
     }
 });
 
+Cypress.Commands.add('checkIfLoggedIn', () => {
+    cy.get('.user-controls').should('be.visible');
+    cy.get('.user-controls').click()
+    cy.wait(1000)
 
+    cy.get('@valid_username').then((username) => {
+    cy.get('.username')
+        .invoke('text')
+        .then((text) => {
+        cy.wrap(text.trim()).should('equal', username);
+        });
+    });
+});

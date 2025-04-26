@@ -1,7 +1,10 @@
 const { faker } = require('@faker-js/faker');
 
+const authToken = Cypress.env('authToken');
+console.error('auth token', authToken)
+
 Cypress.Commands.add('setCloudflareBypass', () => {
-    cy.setCookie('CF_Authorization', 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdhMzc4NzM2NzY2MmIyOTZhNjQ2MTI4NDJlNThjNjM2ZmNjYzAyZDViMTcwOWI1YWEzZmQ0MWE1NjZiMzkxY2MifQ.eyJhdWQiOlsiYjE4OGQxMGI1ZDE5OWYzNzFjMjdmMGRmNTM0YmNiNWY5ZTE1YmNjMTc2ZmViM2RhNTk3NDZkMzJhYzk0MTcxYSJdLCJlbWFpbCI6InBldGFyLmxhemljLmZlckBnbWFpbC5jb20iLCJleHAiOjE3NDU2NzkyNDksImlhdCI6MTc0NTU5Mjg0OSwibmJmIjoxNzQ1NTkyODQ5LCJpc3MiOiJodHRwczovL3h0cmVtZS5jbG91ZGZsYXJlYWNjZXNzLmNvbSIsInR5cGUiOiJhcHAiLCJpZGVudGl0eV9ub25jZSI6Ino3VFhHRGlmWVl6eGlhUHIiLCJzdWIiOiI4OTQ5MWE4Mi1kODU2LTVjMWQtOWM1YS0yYWY4NTgxNTY2YjUiLCJjb3VudHJ5IjoiSFIifQ.qP82MnnEDWAaXVUnm8I5gmyEb2iMKWg2UmrJlA_0HyiraLWzEKm_iAauJrBY1HrRIY5pDXmHSk9nS1L5tjgPwjGh632fpohPZwHWvaB5Z4hqITBnEJBTNNjzmhcWSbK5RBm0NAB_pxCDBj7DlHCbypdbnWcz2OxtmNu1azllj2fFWM5i-pT2w70Q2zFhP1M4ivh0CKp0mrqRVKavtFtVB9XoDanomppN-MXX2lYwkS1vVrzwFl9a18B5mT5D40MkZ1yvlGycVuzgE87T7agiE0vkYZdduCK2fC23j6wRzBXbWronqafsKhNA07GmMUnrEERV8jcbyXYyNrrfiYzBgg', {
+    cy.setCookie('CF_Authorization', authToken, {
         domain: 'www.stage-volcano.com',
         path: '/',
         secure: true,
